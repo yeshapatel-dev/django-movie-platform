@@ -1,0 +1,36 @@
+{% extends 'movies/base.html' %}
+{% block title %}10.Add Genre Page{% endblock %}
+
+{% block content %}
+<div class="add-genre-container">
+    <div></div>
+    <h1>{% if genre %}Edit Genre{% else %}Add New Genre{% endif %}</h1>
+    <div>
+        {% if genre %}
+        <form action="{% url 'movies:editgenre' genre_id=genre.id %}" method="post">
+        {% else %}
+        <form action="{% url 'movies:addgenre' %}" method="post">
+        {% endif %}
+        
+        {% csrf_token %}
+            <div>
+                <label for="genre-name">Genre Name</label>
+                <input type="text" name="genre_name" id="genre-name" placeholder="e.g. Action, Comedy, Drama" value="{{ genre.genre_name|default:'' }}" required/>
+            </div>
+            <div class="btn">
+                <button type="submit">{% if genre %}Update Genre{% else %}Save Genre{% endif %}</button>
+                <button type="button"><a href="{% url 'movies:genre' %}">Cancel</a></button>
+            </div>
+        </form>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

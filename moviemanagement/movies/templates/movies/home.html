@@ -1,0 +1,72 @@
+{% extends 'movies/base.html' %}
+
+{% block title %}1.Home Page - Movie Management{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <!-- head-search -->
+    <div class="head-search-container">
+        <h2>Welcome to Movie Management System</h2>
+        <p>Browse and manage your movie collection</p>
+        <form class="search-box" method="get" role="search" action="{% url 'movies:movie' %}">
+            <input class="search-input" name="search_movie" type="search" value="{{ request.GET.search_movie }}" placeholder="Search for movies by title..."/ required>
+            <button class="btn" type="submit">Search</button>
+        </form>
+        <br>
+    </div>
+    <!-- content -->
+    <div class="content">
+        <h2 class="block-title">Browse by Genre</h2>
+        <div class="genre-items">
+        {% for genre in genres %}
+            <form action="{% url 'movies:movie' %}" method="get">
+                <div name='genres'>
+                    <input type="hidden" name="genres" value="{{ genre.genre_name }}">
+                    <button class="genre-btn" type="submit">{{ genre.genre_name }}</button>
+                </div>
+            </form>
+        {% empty %}
+        <p>No genre found.</p>
+        {% endfor %}
+        </div>
+        <br>
+        <h2 class="block-title">Popular Movies</h2>
+        <div class="movie-block">
+            {% for movie in movies %}
+                <a class="nav-link" href="{% url 'movies:movieDetail' movie.id %}">
+                    <div class="movie-card">
+                        <div class="movie-poster">
+                            {% if movie.poster %}
+                                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}">
+                            {% else %}
+                                {% comment %} 🎬 {% endcomment %}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 1026 1024"><path fill="#000000" d="M969.057 248h-1l-71-119l-127 17l80 120l-212 33l-81-120l-116 18l81 120l-220 35l-77-127l-122 24l81 121l-95 15h104l-64 127h128l64-127h192l-64 127h128l64-127h192l-64 127h128l64-127q26 0 45 18.5t19 44.5v512q0 27-19 45.5t-45 18.5h-895q-27 0-45.5-18.5T2.057 960V448q0-26 18.5-44.5t45.5-18.5q-5-2-12-5.5t-20.5-17.5t-16.5-31l-16-124q-3-25 13.5-45.5t42.5-23.5l882-137q26-3 46.5 13t23.5 41l16 124q3 25-13.5 45.5t-42.5 23.5zm-808 648h704q13 0 22.5-9.5t9.5-22.5t-9.5-22.5t-22.5-9.5h-704q-13 0-22.5 9.5t-9.5 22.5t9.5 22.5t22.5 9.5zm0-192h704q13 0 22.5-9t9.5-22.5t-9.5-23t-22.5-9.5h-704q-13 0-22.5 9.5t-9.5 23t9.5 22.5t22.5 9z"/></svg>
+                            {% endif %}
+                        </div>
+                        <div class="movie-info">
+                            <h3>{{ movie.title }}</h3>
+                            <p>{{ movie.release_year }} • {{ movie.genre }} • {{ movie.duration }} min</p>
+                            <span> 
+                                {% comment %} {{ review.rating }} rating *  {% endcomment %}
+                                <p>⭐ {{ movie.rating }}</p>
+                                <div class="stars">
+                                {% for i in "12345678910" %}
+                                    {% if forloop.counter <= movie.rating|floatformat:0 %}
+                                                            
+                                    {% endif %}
+                                {% endfor %}
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            {% empty %}
+                <p>No movies found.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<footer>
+    <p>© 2025 Movie Management System. All rights reserved.</p>
+</footer>
+{% endblock %}

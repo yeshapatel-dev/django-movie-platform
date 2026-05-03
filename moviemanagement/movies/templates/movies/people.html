@@ -1,0 +1,73 @@
+{% extends 'movies/base.html' %}
+
+{% block title %}6.People (Actor/Director) {% endblock %}
+
+{% block content %}
+<div class="people-container">
+    <div class="people-header">
+        <h1>All People</h1>
+        {% if user.user_role == 'admin' %}
+        <a class="nav-link" href="{% url 'movies:addpeople' %}"><button>+ Add New Person</button></a>
+        {% endif %}
+    </div>
+    <br>
+
+    <div class="filter-container">
+        <form class="filter-person" method="get" action="{% url 'movies:people' %}" role="search">
+            <div class="filter-grp">
+                <label for="role_type">Role Type</label>
+                {% comment %} <select id="role_type" name="role_type">
+                    {% for value, label in person.role_type.choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select> {% endcomment %}
+                <select class="form-select" name="role_type">
+                    <option value="all">All Roles</option>
+                    <option value="actor">Actor</option>
+                    <option value="director">Director</option>
+                    <option value="writer">Writer</option>
+                </select>
+            </div>
+            <div class="filter-grp">
+                <label for="search_person">Search</label>
+                <input type="search" name="search_person" value="{{ request.GET.search_person|default:'' }}" placeholder="Search by name..."/>
+            </div>
+            <button class="filter-grp" type="submit">Apply Filters</button>
+        </form>
+    </div>
+
+    <div class="people-section">
+    {% for person in people %}
+    {% comment %} </a class="nav-link" href="{% url 'movies:personDetail' person.id %}"> {% endcomment %}
+    {% comment %} <a class="nav-link" href="{% url 'movies:personDetail' person.id %}"> {% endcomment %}
+        <div class="person-card">
+            <div class="person-profile">
+                {% if person.profile_photo %}
+                    <img src="{{ person.profile_photo.url }}" alt="{{ person.person_name }}">
+                {% else %}
+                    {% comment %} 👤 {% endcomment %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 512 512"><path fill="#3973b1" d="M332.64 64.58C313.18 43.57 286 32 256 32c-30.16 0-57.43 11.5-76.8 32.38c-19.58 21.11-29.12 49.8-26.88 80.78C156.76 206.28 203.27 256 256 256s99.16-49.71 103.67-110.82c2.27-30.7-7.33-59.33-27.03-80.6M432 480H80a31 31 0 0 1-24.2-11.13c-6.5-7.77-9.12-18.38-7.18-29.11C57.06 392.94 83.4 353.61 124.8 326c36.78-24.51 83.37-38 131.2-38s94.42 13.5 131.2 38c41.4 27.6 67.74 66.93 76.18 113.75c1.94 10.73-.68 21.34-7.18 29.11A31 31 0 0 1 432 480"/></svg>
+                {% endif %}
+            </div>
+            <div class="person-info">
+                <h3>{{ person.person_name }}</h3>
+                <span>{{ person.role_type }}</span>
+                <p>Born: {{ person.birth_date }}</p>
+                <p>{{ person.moviecast_set.count }} movies acted <br> {{ person.directed_movies.count }} movies directed</p>
+                {% comment %} <p>{% if acted_movie_casts %} {{ person.moviecast_set.count }} movies acted {% else %} {{ person.directed_movies.count }} movies directed{% endif %}</p> {% endcomment %}
+            </div>
+            <div class="action-btn">
+                <a href="{% url 'movies:personDetail' person.id %}"><button>View</button></a>
+                {% if user.user_role == 'admin' %}
+                    <a href="{% url 'movies:editpeople' person.id %}"><button>Edit</button></a>
+                    <a href="{% url 'movies:deletepeople' pk=person.id %}"><button>Delete</button></a>
+                {% endif %}
+            </div>
+        </div>
+    {% comment %} </a> {% endcomment %}
+    {% empty %}
+        <p>No person found.</p>
+    {% endfor %}
+    </div>
+</div>
+{% endblock content %}

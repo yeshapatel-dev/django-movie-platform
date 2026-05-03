@@ -1,0 +1,114 @@
+{% extends "movies/base.html" %}
+
+{% block title %}7.Person Detail Page{% endblock title %}
+
+{% block content %}
+{% comment %} <h1>Person Detail Page</h1> {% endcomment %}
+<div class="person-detail-container">
+    <div class="person-detail-container-box">
+        <div class="person-detail">
+            <div class="person-profile">
+                {% if person.profile_photo %}
+                    <img src="{{ person.profile_photo.url }}" alt="{{ person.person_name }}">
+                {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 512 512"><path fill="#3973b1" d="M332.64 64.58C313.18 43.57 286 32 256 32c-30.16 0-57.43 11.5-76.8 32.38c-19.58 21.11-29.12 49.8-26.88 80.78C156.76 206.28 203.27 256 256 256s99.16-49.71 103.67-110.82c2.27-30.7-7.33-59.33-27.03-80.6M432 480H80a31 31 0 0 1-24.2-11.13c-6.5-7.77-9.12-18.38-7.18-29.11C57.06 392.94 83.4 353.61 124.8 326c36.78-24.51 83.37-38 131.2-38s94.42 13.5 131.2 38c41.4 27.6 67.74 66.93 76.18 113.75c1.94 10.73-.68 21.34-7.18 29.11A31 31 0 0 1 432 480"/></svg>
+                {% endif %}
+            </div>
+            <div class="person-main">   
+                <h1>{{ person.person_name }}</h1>
+                <span>{{ person.role_type }}</span>
+                <p><strong>Born:</strong> {{ person.birth_date }}</p>
+                <p><strong>Total Movies:</strong>{% if acted_movie_casts %} {{ person.moviecast_set.count }} movies acted {% else %} {{ person.directed_movies.count }} movies directed{% endif %} </p>
+                <div class="person-action">
+                    {% if user.user_role == 'admin' %}
+                        <button><a href="{% url 'movies:editpeople' person.id %}">Edit Person</a></button>
+                        <button><a href="{% url 'movies:deletepeople' pk=person.id %}">Delete Person</a></button>
+                    {% endif %}
+                    <button><a href="{% url 'movies:people' %}">Back to List</a></button>
+                </div>
+            </div>
+        </div>
+        <div class="bio">
+            <h2 class="block-title">Biography</h2>
+            <p>{{ person.bio }}</p>
+        </div>
+        <div class="movie-detail-block">
+            <h2 class="block-title">Movies</h2>
+            {% if person.directed_movies.all %}
+            <div class="movie-block">
+                {% comment %} <h3>Directed</h3> {% endcomment %}
+                {% for movie in person.directed_movies.all %}
+                    <a href="{% url 'movies:movieDetail' movie.id %}">
+                        <div class="movie-card">
+                            <div class="movie-poster">
+                                {% if movie.poster %}
+                                    <img src="{{ movie.poster.url }}" alt="{{ movie.title }}">
+                                {% else %}
+                                    {% comment %} 🎬 {% endcomment %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 1026 1024"><path fill="#000000" d="M969.057 248h-1l-71-119l-127 17l80 120l-212 33l-81-120l-116 18l81 120l-220 35l-77-127l-122 24l81 121l-95 15h104l-64 127h128l64-127h192l-64 127h128l64-127h192l-64 127h128l64-127q26 0 45 18.5t19 44.5v512q0 27-19 45.5t-45 18.5h-895q-27 0-45.5-18.5T2.057 960V448q0-26 18.5-44.5t45.5-18.5q-5-2-12-5.5t-20.5-17.5t-16.5-31l-16-124q-3-25 13.5-45.5t42.5-23.5l882-137q26-3 46.5 13t23.5 41l16 124q3 25-13.5 45.5t-42.5 23.5zm-808 648h704q13 0 22.5-9.5t9.5-22.5t-9.5-22.5t-22.5-9.5h-704q-13 0-22.5 9.5t-9.5 22.5t9.5 22.5t22.5 9.5zm0-192h704q13 0 22.5-9t9.5-22.5t-9.5-23t-22.5-9.5h-704q-13 0-22.5 9.5t-9.5 23t9.5 22.5t22.5 9z"/></svg>
+                                {% endif %}
+                            </div>
+                            <div class="movie-info">
+                                <h3>{{ movie.title }}</h3>
+                                <p>{{ movie.release_year }}</p>
+                                <span>
+                                    <p>⭐ {{ movie.rating }}</p>
+                                    <div class="stars">
+                                    {% for i in "12345678910" %}
+                                        {% if forloop.counter <= movie.rating|floatformat:0 %}
+                                                                
+                                        {% endif %}
+                                    {% endfor %}
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if acted_movie_casts %}
+            <div class="movie-block">
+                {% comment %} <h3>Acted In</h3> {% endcomment %}
+                {% for cast_item in acted_movie_casts %} 
+                    {% comment %} {% if cast_item.movie.id %} {% endcomment %}
+                    <a href="{% url 'movies:movieDetail' cast_item.movie_name.id %}">
+                        <div class="movie-card">
+                            <div class="movie-poster">
+                                {% if cast_item.movie_name.poster %}
+                                    <img src="{{ cast_item.movie_name.poster.url }}" alt="{{ cast_item.movie_name.title }}">
+                                {% else %}
+                                    {% comment %} 🎬 {% endcomment %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 1026 1024"><path fill="#000000" d="M969.057 248h-1l-71-119l-127 17l80 120l-212 33l-81-120l-116 18l81 120l-220 35l-77-127l-122 24l81 121l-95 15h104l-64 127h128l64-127h192l-64 127h128l64-127h192l-64 127h128l64-127q26 0 45 18.5t19 44.5v512q0 27-19 45.5t-45 18.5h-895q-27 0-45.5-18.5T2.057 960V448q0-26 18.5-44.5t45.5-18.5q-5-2-12-5.5t-20.5-17.5t-16.5-31l-16-124q-3-25 13.5-45.5t42.5-23.5l882-137q26-3 46.5 13t23.5 41l16 124q3 25-13.5 45.5t-42.5 23.5zm-808 648h704q13 0 22.5-9.5t9.5-22.5t-9.5-22.5t-22.5-9.5h-704q-13 0-22.5 9.5t-9.5 22.5t9.5 22.5t22.5 9.5zm0-192h704q13 0 22.5-9t9.5-22.5t-9.5-23t-22.5-9.5h-704q-13 0-22.5 9.5t-9.5 23t9.5 22.5t22.5 9z"/></svg>
+                                {% endif %}
+                            </div>
+                            <div class="movie-info">
+                                <h3>{{ cast_item.movie_name.title }}</h3>
+                                <p>{{ cast_item.movie_name.release_year }}</p>
+                                <span>
+                                    <p>⭐ {{ cast_item.movie_name.rating }}</p>
+                                    <div class="stars">
+                                    {% for i in "12345678910" %}
+                                        {% if forloop.counter <= movie.rating|floatformat:0 %}
+                                                                
+                                        {% endif %}
+                                    {% endfor %}
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                    {% comment %} {% endif %} {% endcomment %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<br><br><br><br><br>
+{% endblock content %}
+
+
+
+

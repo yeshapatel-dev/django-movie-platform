@@ -1,0 +1,35 @@
+{% extends 'movies/base.html' %}
+
+{% block title %}8.Add Review Page{% endblock %}
+
+{% block content %}
+<div class="add-review-container">
+    <div class="movie-title-bar">
+        <h3> {% if review %}Edit Your Review{% else %}Add Your Review{% endif %} for <i>{{ movie.title }} ({{ movie.release_year }})</i><h3>
+    </div>
+    
+    <form action="
+        {% if review %}
+            {% url 'movies:editreview' movie.id review.id %}
+        {% else %}
+            {% url 'movies:addreview' movie.id %}
+        {% endif %}
+    " method="post">
+        {% csrf_token %}
+        <div class="add-review">
+            <label for="rating">Your Rating</label>
+            <input type="number" name="rating" min="1" max="10" step="1" required value="{{ review.rating|default_if_none:'' }}">
+            <p>Select a rating from 1 (worst) to 10 (best)</p>
+        </div>
+        <div class="add-review">
+            <label for="comment">Your Comment</label> 
+            <textarea placeholder="write your review here..." name="comment">{{ review.comment|default_if_none:"" }}</textarea>
+            <p>Share your thoughts about the movie</p>
+        </div>
+        <div class="review-btn">
+            <button type="submit">{% if review %}Update Review{% else %}Submit Review{% endif %}</button>
+            <a href="{% url 'movies:movieDetail' movie.id %}"><button type="button">Cancel</button></a>
+        </div>
+    </form>
+</div>
+{% endblock content %}

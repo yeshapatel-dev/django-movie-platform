@@ -1,0 +1,114 @@
+{% extends 'movies/base.html' %}
+
+{% block title %}9.Mange Movie Cast and Languages{% endblock title %} 
+
+{% block content %}
+<div class="manage-cast-lang-container">
+    <div class="movie-title-bar">
+        <h2>Manage Cast and Languages for <i>{{ movie.title }}</i></h2>
+    </div>
+
+    <div class="grid-container">
+        <div class="cast-container">
+            <h3 class="block-title">Movie Cast</h3>
+            <div class="cast-form">
+                <form method="post">
+                    {% csrf_token %}
+                    <h4>Add Cast Member</h4>
+                    <div class="add-cast-container">
+                        <label>Select Actor</label>
+                        <select name="actor" required>
+                            <option value="">Choose an Actor...</option>
+                            {% for actor in actors %}
+                                <option value="{{ actor.id }}">{{ actor.person_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div><br>
+                    <div>
+                        <label>Character Name</label>
+                        <input type="text" name="character_name" placeholder="Enter character name" required>
+                    </div>
+                    <div class="btn-add-cast-lang">
+                        <button type="submit" name="add_cast">+ Add to Cast</button>
+                    </div>
+                    
+                </form>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if "cast" in message.tags %}
+                            <div class="error-msg">{{ message }}</div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div> 
+            <div class="cast-list">
+                {% for c in cast_list %}
+                    <div class="cast-list-view">
+                        {{ c.person.person_name }} <br>as {{ c.character_name }}
+                        <form action="{% url 'movies:removeCast' c.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Remove</button>
+                        </form>
+                    </div>
+                {% empty %}
+                    <li>No cast added yet.</li>
+                {% endfor %}
+            </div>  
+        </div>
+
+        <div class="lang-container">
+            <h3 class="block-title">Movie Languages</h3>
+            <div class="lang-form">
+                <form method="post">
+                    {% csrf_token %}
+                    <h4>Add Language</h4>
+                    <div class="add-lang-container">
+                        <label>Select Language</label>
+                        <select name="language" required>
+                            <option value="">Choose a Language...</option>
+                            {% for lang in languages %}
+                                <option value="{{ lang.pk }}">{{ lang.language }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>  
+                    <div class="btn-add-cast-lang">      
+                        <button type="submit" name="add_language">+ Add Language</button>
+                    </div>
+                </form>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if "lang" in message.tags %}
+                            <div class="error-msg">{{ message }}</div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="movie-languages">
+                {% for lang in movie_languages %}
+                <div class="lang-list-view">
+                    {{ lang.language }} 
+                    <form action="{% url 'movies:removeLanguage' lang.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Remove</button>
+                    </form>
+                </div>
+                {% empty %}
+                <li>No languages added yet.</li>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <form action="{% url 'movies:manage_cast_language' movie_id=movie.id %}" method="post">
+            {% csrf_token %}
+            <div class="bottom-btns">
+                <a href="{% url 'movies:movie' %}"><button type="button">Back to Movie</button></a>
+                <button type="submit" name="done">Done</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}

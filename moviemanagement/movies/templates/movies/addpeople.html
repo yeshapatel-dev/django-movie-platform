@@ -1,0 +1,52 @@
+{% extends 'movies/base.html' %}
+
+{% block title %}11.Add People Page{% endblock %}
+
+{% block content %}
+<div class="add-people-container">
+    <div></div>
+    <h1>Add New People</h1>
+    <div>
+        {% if person %}
+        <form action="{% url 'movies:editpeople' person_id=person.id %}" method="post" enctype="multipart/form-data">
+        {% else %}
+        <form action="{% url 'movies:addpeople' %}" method="post" enctype="multipart/form-data">
+        {% endif %}
+            {% csrf_token %}
+            <div><label for="person-name">Full Name: </label>
+                <input type="text" name="person_name" id="person-name"placeholder="Enter full name" value="{% if person %}{{ person.person_name }}{% endif %}">
+            </div>
+            <div class="role-type">
+                <label for="role_type">Role:</label>
+                <select id="role_type" name="role_type" required>
+                    {% for value, label in role_choices %}
+                        <option value="{{ value }}" {% if person and person.value == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="birth-date">
+                <label for="birth_date">Birthdate: </label>
+                <input type="date" name="birth_date" id="birth_date" value="{% if person %}{{ person.birth_date|date:'Y-m-d' }}{% endif %}">
+            </div>
+
+            <div class="bio">
+                <label for="bio">Biography: </label>
+                <textarea name="bio" id="bio" rows="5" placeholder="Enter biography...">{% if person %}{{ person.bio }}{% endif %}</textarea>
+            </div>
+
+            <div class="profile-photo">
+                <label for="profile-photo"> Profile Photo</label>
+                <input type="file" name="profile_photo" id="profile-photo" accept="image/*" />
+            </div>
+
+            <div class="btn">
+                <button type="submit">{% if person %}Save Changes{% else %}Save Person{% endif %}</button>
+                <button type="button"><a href="{% url 'movies:people' %}">Cancel</a></button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

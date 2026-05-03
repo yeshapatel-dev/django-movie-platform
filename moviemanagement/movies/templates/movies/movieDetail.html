@@ -1,0 +1,136 @@
+{% extends 'movies/base.html' %}
+{% block title %}3. Movie Detail Page{% endblock %}
+
+{% block content %}
+<div class="movie-detail-container">
+    
+    <div class="movie-detail-upper-block">
+        <!-- Movie Header Section -->
+        <div class="movie-detail">
+            <div class="movie-poster">
+                {% if movie.poster %}
+                    <img src="{{ movie.poster.url }}" alt="{{ movie.title }}">
+                {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 1026 1024"><path fill="#000000" d="M969.057 248h-1l-71-119l-127 17l80 120l-212 33l-81-120l-116 18l81 120l-220 35l-77-127l-122 24l81 121l-95 15h104l-64 127h128l64-127h192l-64 127h128l64-127h192l-64 127h128l64-127q26 0 45 18.5t19 44.5v512q0 27-19 45.5t-45 18.5h-895q-27 0-45.5-18.5T2.057 960V448q0-26 18.5-44.5t45.5-18.5q-5-2-12-5.5t-20.5-17.5t-16.5-31l-16-124q-3-25 13.5-45.5t42.5-23.5l882-137q26-3 46.5 13t23.5 41l16 124q3 25-13.5 45.5t-42.5 23.5zm-808 648h704q13 0 22.5-9.5t9.5-22.5t-9.5-22.5t-22.5-9.5h-704q-13 0-22.5 9.5t-9.5 22.5t9.5 22.5t22.5 9.5zm0-192h704q13 0 22.5-9t9.5-22.5t-9.5-23t-22.5-9.5h-704q-13 0-22.5 9.5t-9.5 23t9.5 22.5t22.5 9z"/></svg>
+                {% endif %}
+            </div>
+            <div class="movie-main">
+                <h1>{{ movie.title }}</h1>
+                <p>{{ movie.tagline|default:"" }}</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Genre</th>
+                            <th>Release Year</th>
+                            <th>Duration</th>
+                            <th>Director</th>
+                        </tr>
+                    </thead>
+                    <tbody> 
+                        <tr>
+                            <td>{{ movie.genre.genre_name }}</td>
+                            <td>{{ movie.release_year }}</td>
+                            <td>{{ movie.duration }} min</td>
+                            <td>{{ movie.director.person_name }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                {% comment %} <h2><span>⭐ {{ movie.average_rating|default:"No Rating" }}</span></h2><br> {% endcomment %}
+                <div class="movie-info">
+                    {% comment %} <h2> {% endcomment %}
+                    <span>
+                        <p> ⭐ {{ movie.rating }}/10</p>
+                        <div class="stars">
+                        {% for i in "12345678910" %}
+                            {% if forloop.counter <= movie.rating|floatformat:0 %}
+                            ⭐                        
+                            {% endif %}
+                        {% endfor %}
+                        </div>
+                    </span>
+                {% comment %} </h2> {% endcomment %}
+                </div><br>
+
+                <div class="movie-actions">
+                    {% if user.user_role == 'admin' %}
+                        <button type="button"><a href="{% url 'movies:editmovie' movie.id %}">Edit Movie</a></button>
+                        <button type="button"><a href="{% url 'movies:deletemovie' pk=movie.id %}">Delete Movie</a></button>
+                    {% endif %}
+                    <button type="button"><a href="{% url 'movies:movie' %}">Back to List</a></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overview Section -->
+        <div class="movie-description">
+            <h2 class="block-title">Overview</h2>
+            <p>{{ movie.description|default:"No description available." }}</p>
+        </div>
+
+        <!-- Language Section -->
+        <div class="movie-language">
+            <h2 class="block-title">Languages</h2>
+            {% if languages %}
+            <div class="lang-list">
+                {% for movie_lang in languages %}
+                    <div>{{ movie_lang.language.language }}</div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>No languages have been added yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Cast Section -->
+        <div class="movie-cast">
+            <h2 class="block-title">Cast</h2>
+            {% if cast %}
+                <div class="cast-list">
+                    {% for cast_member in cast %}
+                        <div></h3>{{ cast_member.person.person_name }}</h3><br> as {{ cast_member.character_name }}</div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No cast members have been added yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Review Section -->
+    <div class="review-container">
+        <h2 class="block-title">User Reviews</h2>
+        <button><a href="{% url 'movies:addreview' movie.id %}">+ Add Your Review</a></button>
+        <br><br>
+
+        {% for review in movie.reviews.all %}
+        <div class="single-review">
+            <div>
+                <h3>
+                    {% if review.user_name %}
+                        {{ review.user_name.username }}
+                    {% else %}
+                        Anonymous User
+                    {% endif %}
+                </h3>
+                <p><strong>Rating:</strong> {{ review.rating }}/10</p>
+                <p><em>{{ review.comment }}</em></p>
+                <p><small>{{ review.created_at }}</small><p>
+            </div>
+            {% if request.user == review.user_name %}
+            <div>
+                <button type="button"><a href="{% url 'movies:editreview' movie.id review.id %}">Edit</a></button>
+                <form action="{% url 'movies:deletereview' review.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p>No reviews yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
