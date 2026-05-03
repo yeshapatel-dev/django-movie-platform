@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'movies/css/style.css' %}">
+</head>
+<body>
+    <div class="registration-container">
+        <h1>Registration</h1>
+        <form method="post" class="registration-form">
+            {% csrf_token %}
+            {% comment %} {{ form.as_p }} {% endcomment %}
+            {{ form.non_field_errors }}
+
+            {% for field in form.visible_fields %}
+            <div>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                
+                {{ field }}
+                
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+
+                {% comment %} {% if field.help_text %}
+                    <p class="helptext">{{ field.help_text }}</p>
+                {% endif %} {% endcomment %}
+            </div>
+            {% endfor %}
+            <div class="signin-btn">
+                <button type="submit">Log In</button>
+                <button type="reset">Cancel</button>
+            </div>
+            {% comment %} {% if registration %} {% endcomment %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="messages">{{ message }}</li>
+                    {% endfor %}
+                {% endif %}
+            {% comment %} {% endif %} {% endcomment %}
+            <p>Already have an account ? <a href="{% url 'movies:signin' %}">SignIn</a></p>
+        </form>
+    </div>
+</body>
+</html>

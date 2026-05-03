@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Movie Management{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'movies/css/style.css' %}">
+</head>
+
+<body>
+    <!-- whole-page -->
+    <div class="whole-container">
+
+        <div class="navbar">
+            <div><h3>Movie Management System</h3></div>
+            <div class="navbar-navitems">
+                <div class="nav-item">
+                    <a class="nav-link" href="{% url 'movies:home' %}">Home</a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="{% url 'movies:movie' %}">Movies</a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="{% url 'movies:genre' %}">Genre</a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="{% url 'movies:people' %}">People</a>
+                </div>
+                {% if user.user_role == 'admin' %}
+                    <div class="nav-item">
+                        <a class="nav-link" href="{% url 'movies:addmovie' %}">Add Movie</a>
+                    </div>
+                {% endif %}
+                <a class="nav-link" href="{% url 'movies:signout' %}">LogOut</a>
+            </div>
+            {% comment %} <div class="account-menu"> {% endcomment %}
+                {% comment %} <button type="button" class="account-button"> {% endcomment %}
+                    {% comment %} <a class="nav-link" href="{% url 'movies:signout' %}">SignOut</a> {% endcomment %}
+                {% comment %} </button> {% endcomment %}
+                {% comment %} <ul class="menu-options">
+                    <li><a href="#">Profile</a></li>
+                    <li><a href="#">Theme</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{% url 'movies:signout' %}">SignOut</a></li>
+                </ul> {% endcomment %}
+            {% comment %} </div> {% endcomment %}
+        </div>
+
+        <!-- Toast container -->
+        <div id="toast-container"></div>
+
+        <main>
+            <!-- Page content -->
+            <div class="main-content">
+                {% block content %}
+                <br><br><br>
+                {% endblock %}
+            </div>
+        </main>        
+    </div>
+
+
+    <script>
+        function showToast(message, duration = 3000) {
+            const toastContainer = document.getElementById("toast-container");
+            if (!toastContainer) return;
+
+            const toast = document.createElement("div");
+            toast.classList.add("toast");
+            toast.innerText = message;
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add("show");
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => {
+                    toast.remove();
+                }, 500);
+            }, duration);
+        }
+
+        {% if messages %}
+            {% for message in messages %}
+                showToast("{{ message|escapejs }}");
+            {% endfor %}
+        {% endif %}
+    </script>
+</body>
+</html>

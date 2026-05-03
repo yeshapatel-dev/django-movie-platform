@@ -1,0 +1,43 @@
+{% extends 'movies/base.html' %}
+{% block title %}5.Genre List Page{% endblock %}
+
+{% block content %}
+<div class="genre-container">
+    <div class="genre-header">
+    <h1>All Genres</h1>
+        {% if user.user_role == 'admin' %}
+            <a class="nav-link" href="{% url 'movies:addgenre' %}"><button type="button">+ Add New Genre</button></a>
+        {% endif %}
+    </div>
+    <div class="genre-list">
+        {% for genre in genres %}
+        <div class="genre-card">
+            <div class="genre-info">
+                <h3>{{ genre.genre_name }}</h3>
+                <p>{{ genre.movies.count }} movies</p>
+            </div>
+            <div class="action-btns">
+                <div>
+                    <form action="{% url 'movies:movie' %}" method="get">
+                        {% comment %} <div name='genres'> {% endcomment %}
+                            <input type="hidden" name="genres" value="{{ genre.genre_name }}">
+                            <button class="genres-btns" type="submit">View Movies</button>
+                        {% comment %} </div> {% endcomment %}
+                    </form>
+                </div>
+                {% if user.user_role == 'admin' %}
+                <div>
+                    <a href="{% url 'movies:editgenre' genre.id %}"><button type="button" class="genres-btns">Edit</button></a>
+                </div>
+                <div>
+                    <a href="{% url 'movies:deletegenre' pk=genre.id %}"><button type="button" class="genres-btns">Delete</button></a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p>No genres found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}  

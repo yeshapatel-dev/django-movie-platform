@@ -1,0 +1,75 @@
+{% extends 'movies/base.html' %}
+
+{% block title %}4.Add Movie Page{% endblock %}
+
+{% block content %}
+<div class="add-movie-container">
+    <div></div>
+    <h1>Add New Movie</h1>
+
+    {% if movie %}
+    <form action="{% url 'movies:editmovie' movie_id=movie.id %}" method="post" enctype="multipart/form-data">
+    {% else %}
+    <form action="{% url 'movies:addmovie' %}" method="post" enctype="multipart/form-data">
+    {% endif %}
+        
+    {% csrf_token %}
+
+        <div class="movie-title">
+            <label for="title">Title:</label>
+            <input type="text" name="title" id="title" placeholder="Enter movie title" value="{% if movie %}{{ movie.title }}{% endif %}" required>
+        </div>
+
+        <div class="description">
+            <label for="description">Description:</label>
+            <textarea name="description" id="description" rows="3" placeholder="Enter short description" required>{% if movie %}{{ movie.description }}{% endif %}</textarea>
+        </div>
+
+        <div class="release-year">
+            <label for="release_year">Release Year:</label>
+            <input type="number" name="release_year" id="release_year" placeholder="e.g. 2024" value="{% if movie %}{{ movie.release_year }}{% endif %}" required>
+        </div>
+
+        <div class="duration">
+            <label for="duration" >Duration (in minutes):</label>
+            <input type="number" name="duration" id="duration" placeholder="e.g. 120" value="{% if movie %}{{ movie.duration }}{% endif %}" required>
+        </div>
+
+        <div class="genre-dropdown">
+            <label for="genre" class="form-label">Genre:</label>
+            <select name="genre" id="genre" class="form-select" required>
+                <option value="">Select Genre</option>
+                {% for genre in genres %}
+                    <option value="{{ genre.id }}" {% if movie and movie.genre.id == genre.id %}selected{% endif %}>
+                        {{ genre.genre_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="director-dropdown">
+            <label for="director">Director:</label>
+            <select name="director" id="director">
+                <option value="">Select Director</option>
+                {% for director in directors %}
+                    <option value="{{ director.id }}" {% if movie and movie.director.id == director.id %}selected{% endif %}>
+                        {{ director.person_name }}
+                    </option>
+                    {% empty %}
+                    <option disabled>No directors found</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="poster">
+            <label for="poster">Poster (optional):</label>
+            <input type="file" name="poster" id="poster" accept="image/*" />
+        </div>
+
+        <div class="btn">
+            <button type="submit">{% if movie %}Save Changes{% else %}Add Movie{% endif %}</button>
+            <button type="button"><a href="{% url 'movies:movie' %}">Cancel</a></button>
+        </div>
+    </form>
+</div>
+{% endblock content %}

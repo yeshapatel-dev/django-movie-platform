@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'movies/css/style.css' %}">
+</head>
+<body>
+    <div class="signin-container">
+        <h1>Log-In</h1>
+        <form method="post">
+            {% csrf_token %}
+            {% comment %} {{ form.as_p }} {% endcomment %}
+            <div>
+                <label for="username">Username</label>
+                <input type="text" name="username" required/>
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="password" name="password" required/>
+            </div>
+            <div class="signin-btn">
+                <button type="submit">Log In</button>
+                <button type="reset">Cancel</button>
+            </div>
+            {% comment %} {% if signin %} {% endcomment %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="messages">{{ message }}</li>
+                    {% endfor %}
+                {% endif %}
+            {% comment %} {% endif %} {% endcomment %}
+            <p>Don't have an account ? <a href="{% url 'movies:registration' %}" >Create Account</a></p>
+        </form>
+    </div>
+    <script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload(true); 
+            }
+        });
+    </script>
+</body>
+</html>
