@@ -57,7 +57,7 @@ This project focuses mainly on:
 git clone https://github.com/yeshapatel-dev/django-movie-platform.git
 
 # Navigate to project
-cd movie_management_system
+cd moviemanagement
 
 # Create virtual environment
 python -m venv venv
