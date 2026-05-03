@@ -54,7 +54,7 @@ This project focuses mainly on:
 
 ```bash
 # Clone repository
-git clone <your-repo-link>
+git clone https://github.com/yeshapatel-dev/django-movie-platform.git
 
 # Navigate to project
 cd movie_management_system
